@@ -1,4 +1,4 @@
-# 📚 Snippet Share
+# 📚 Clip Code - Snippet Sharing Platform
 
 A full-stack web application for sharing, discovering, and managing code snippets across various categories and programming languages.
 
