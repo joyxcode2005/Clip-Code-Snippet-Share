@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "backend",
+  "name": "snippet-share-backend",
   "main": "src/index.ts",
   "compatibility_date": "2025-06-02",
   "vars": {
