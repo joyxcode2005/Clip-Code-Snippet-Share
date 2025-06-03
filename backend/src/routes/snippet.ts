@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client/edge";
+import { Category, Language, PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
@@ -163,6 +163,55 @@ snippetRouter.get("/user-bluk", async (c) => {
     totalPages: Math.ceil(totalCount / limit),
     data: snippets,
   });
+});
+
+// Route to search snippets based on language and category
+snippetRouter.get("/search", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const language = (c.req.query("language") || "JAVASCRIPT") as Language;
+  const category = (c.req.query("category") || "DSA") as Category;
+
+
+  try {
+    const snippets = await prisma.snippet.findMany({
+      where: {
+        category,
+        language,
+      },
+      select: {
+        id: true,
+        title: true,
+        code: true,
+        createdAt: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+
+    if (snippets) {
+      c.status(200);
+      return c.json({
+        snippets,
+      });
+    } else {
+      c.status(500);
+      return c.json({
+        message: "Failed to fetch snippets",
+      });
+    }
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Some error occured!!",
+      error,
+    });
+  }
 });
 
 // Route to update an existing snippet
