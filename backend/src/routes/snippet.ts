@@ -2,7 +2,10 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
-import { createSnippetInput } from "@joyxcoder/clip-code-common";
+import {
+  createSnippetInput,
+  updateSnippetInput,
+} from "@joyxcoder/clip-code-common";
 
 export const snippetRouter = new Hono<{
   Bindings: {
@@ -39,6 +42,7 @@ snippetRouter.use("/*", async (c, next) => {
   await next();
 });
 
+// Route to create a snippet
 snippetRouter.post("/create", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -85,6 +89,207 @@ snippetRouter.post("/create", async (c) => {
     c.status(500);
     return c.json({
       message: "Error in creating snippet",
+      error,
+    });
+  }
+});
+
+// Route to get all the snippets created
+snippetRouter.get("/bulk", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // Gets the page no. from query parameter
+  const page = parseInt(c.req.query("page") || "1");
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const snippets = await prisma.snippet.findMany({
+    skip,
+    take: limit,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const totalCount = await prisma.snippet.count();
+
+  return c.json({
+    page,
+    totalPages: Math.ceil(totalCount / limit),
+    data: snippets,
+  });
+});
+
+// Route to get all the snippets created by the user
+snippetRouter.get("/user-bluk", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get("userId");
+  const page = parseInt(c.req.query("page") || "1");
+
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const snippets = await prisma.snippet.findMany({
+    skip,
+    take: limit,
+    orderBy: {
+      createdAt: "desc",
+    },
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      title: true,
+      code: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  const totalCount = await prisma.snippet.count();
+
+  return c.json({
+    page,
+    totalPages: Math.ceil(totalCount / limit),
+    data: snippets,
+  });
+});
+
+// Route to update an existing snippet
+snippetRouter.put("/update", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const body = await c.req.json();
+
+  const { success, error } = updateSnippetInput.safeParse(body);
+
+  if (!success) {
+    c.status(411);
+    return c.json({
+      message: error,
+    });
+  }
+
+  try {
+    const updatedSnippet = await prisma.snippet.update({
+      where: {
+        id: body.id,
+      },
+      data: {
+        title: body.title,
+        code: body.code,
+      },
+    });
+
+    if (updateSnippetInput) {
+      c.status(200);
+      return c.json({
+        message: "Snippet updated successfully!!!",
+        snippet: updateSnippetInput,
+      });
+    } else {
+      c.status(500);
+      return c.json({
+        message: "Failed to update snippet",
+      });
+    }
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Failed to update snippet",
+    });
+  }
+});
+
+// Route to delete an existing snippet
+snippetRouter.delete("/delete/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // Get the id of the snippet from url
+  const snippetdId = c.req.param("id");
+
+  try {
+    const deletedSnippet = await prisma.snippet.delete({
+      where: {
+        id: snippetdId,
+      },
+    });
+
+    if (deletedSnippet) {
+      c.status(200);
+      return c.json({
+        message: "Snippet has been deleted successfully!!",
+        deletedSnippet: deletedSnippet,
+      });
+    } else {
+      c.status(500);
+      return c.json({
+        message: "Failed to delete snippet",
+      });
+    }
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Failed to delete snippet",
+    });
+  }
+});
+
+// Route to get a snippet info
+snippetRouter.get("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const id = c.req.param("id");
+
+  try {
+    const snippet = await prisma.snippet.findFirst({
+      where: {
+        id: id,
+      },
+      select: {
+        title: true,
+        code: true,
+        category: true,
+        language: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+
+    if (snippet) {
+      c.status(200);
+      return c.json({
+        snippet,
+      });
+    } else {
+      c.status(500);
+      return c.json({
+        message: "Error getting snippet",
+      });
+    }
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Error getting snippet",
       error,
     });
   }

@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { string } from "zod";
 
 export const registerInput = z.object({
   email: z.string().email(),
@@ -34,7 +34,14 @@ export const createSnippetInput = z.object({
     .optional(),
 });
 
+export const updateSnippetInput = z.object({
+  id: z.string(),
+  title: z.string().min(12, "Title should be atleast 12 characters long"),
+  code: z.string(),
+});
+
 export type RegisterInputType = z.infer<typeof registerInput>;
 export type LoginInputType = z.infer<typeof loginInput>;
 
 export type CreateSnippetInput = z.infer<typeof createSnippetInput>;
+export type UpdateSnippetInput = z.infer<typeof updateSnippetInput>;
