@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
 import {
@@ -139,7 +139,7 @@ const Navbar = () => {
             <Link
               to="/snippets"
               onClick={() => setIsMenuOpen(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+              className={`px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
                 isActive("/snippets")
                   ? "bg-slate-700 text-white"
                   : "text-gray-300 hover:bg-gray-700 hover:text-white"
