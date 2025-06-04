@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import bcrypt from "bcryptjs";
-import { sign } from "hono/jwt";
+import { sign, verify } from "hono/jwt";
 import { registerInput, loginInput } from "@joyxcoder/clip-code-common";
 
 export const userRouter = new Hono<{
@@ -120,5 +120,50 @@ userRouter.post("/login", async (c) => {
       },
       500
     );
+  }
+});
+
+// route to get user info
+userRouter.get("/info", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const jwt = c.req.header("Authorization");
+
+  if (!jwt) {
+    c.status(401);
+    return c.json({
+      message: "Unauthorized",
+    });
+  }
+
+  const token = jwt.split(" ")[1];
+  const userId = await verify(token, c.env.JWT_SECRET);
+
+
+  if (!userId) {
+    c.status(401);
+    return c.json({
+      message: "Unauthorized",
+    });
+  }
+
+  try {
+    const userData = await prisma.user.findUnique({
+      where: {
+        id: String(userId.id),
+      },
+    });
+
+    c.status(200);
+    return c.json({
+      userData: userData,
+    });
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Error fetching your details",
+    });
   }
 });

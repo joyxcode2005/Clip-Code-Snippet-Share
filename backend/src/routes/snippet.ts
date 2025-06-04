@@ -94,7 +94,7 @@ snippetRouter.post("/create", async (c) => {
   }
 });
 
-// Route to get all the snippets created
+// Route to get all the snippets created with pagination
 snippetRouter.get("/bulk", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -122,7 +122,7 @@ snippetRouter.get("/bulk", async (c) => {
   });
 });
 
-// Route to get all the snippets created by the user
+// Route to get all the snippets created by the user with pagination
 snippetRouter.get("/user-bluk", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
