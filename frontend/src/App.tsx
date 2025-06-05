@@ -6,6 +6,9 @@ import Create from "./pages/Create";
 import Profile from "./pages/Profile";
 import Edit from "./pages/Edit";
 import { useAuthStore } from "./stores/useAuthStore";
+import YourSnippets from "./pages/YourSnippets";
+import Favourites from "./pages/Favourites";
+import Settings from "./pages/Settings";
 
 const App = () => {
   const isLoggedIn = useAuthStore((state) => state.isLoogedIn);
@@ -23,6 +26,9 @@ const App = () => {
         <Route path="/create" element={<Create />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit/:id" element={<Edit />} />
+        <Route path="/your-snippets" element={<YourSnippets />} />
+        <Route path="/favourites" element={<Favourites />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   );

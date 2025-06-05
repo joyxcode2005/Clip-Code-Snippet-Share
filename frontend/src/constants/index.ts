@@ -1,4 +1,4 @@
-import { Terminal, Zap, Shield } from "lucide-react";
+import { Terminal, Zap, Shield, Home, Plus, Code, Heart } from "lucide-react";
 
 export const authPageInfo = [
   { label: "Developers", value: "50K+", color: "text-blue-400" },
@@ -23,6 +23,13 @@ export const authPageCardInfo = [
     color: "from-indigo-500 to-purple-500",
   },
 ];
+
+export const navigationItems = [
+    { path: "/home", label: "Home", icon: Home },
+    { path: "/create", label: "Create a Snippet", icon: Plus },
+    { path: "/your-snippets", label: "Your Snippets", icon: Code },
+    { path: "/favourites", label: "Favourites", icon: Heart },
+  ];
 
 export const BACKEND_URL =
   "https://snippet-share-backend.joysengupta252005.workers.dev";
