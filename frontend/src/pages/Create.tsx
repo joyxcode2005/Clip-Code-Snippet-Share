@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Code, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import Sidebar from "../components/Sidebar";
 
@@ -18,7 +18,6 @@ const tags = ["DSA", "Web Development", "DevOps/Linux", "AI/ML", "Others"];
 
 const Create = () => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [language, setLanguage] = useState(languages[0].value);
   const [selectedTag, setSelectedTag] = useState(tags[0]);
   const [code, setCode] = useState("// Write your code here");
@@ -28,7 +27,7 @@ const Create = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
-    console.log({ title, description, language, selectedTag, code });
+    console.log({ title, language, selectedTag, code });
   };
 
   return (
@@ -151,6 +150,15 @@ const Create = () => {
                   onChange={(value) => setCode(value || "")}
                   theme="vs-dark"
                   options={{
+                    selectOnLineNumbers: true,
+                    automaticLayout: true,
+                    wordWrap: "on",
+                    wrappingIndent: "indent",
+                    tabSize: 2,
+                    useTabStops: true,
+                    fontFamily: "Fira Code, monospace",
+                    fontLigatures: true,
+                    lineHeight: 24,
                     fontSize: 14,
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
@@ -168,7 +176,7 @@ const Create = () => {
               <button
                 type="submit"
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 
-                         transition-colors duration-200 font-medium cursor-pointer"
+                          transition-colors duration-200 font-medium cursor-pointer"
               >
                 Create Snippet
               </button>
