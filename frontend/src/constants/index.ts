@@ -187,5 +187,22 @@ export const styles: StyleMap = {
   },
 };
 
+export const tags = ["DSA", "Web_Dev", "DevOps/Linux", "AI/ML", "Others"];
+
+export const languages = [
+  { name: "JavaScript", value: "javascript" },
+  { name: "Python", value: "python" },
+  { name: "HTML", value: "html" },
+  { name: "CSS", value: "css" },
+  { name: "JSON", value: "json" },
+  { name: "SQL", value: "sql" },
+  { name: "Markdown", value: "markdown" },
+];
+
+export const categories = ["DSA", "Web Development", "Devops", "AI_ML"];
+
 export const BACKEND_URL =
   "https://snippet-share-backend.joysengupta252005.workers.dev";
+
+// export const BACKEND_URL =
+//   "https://127.0.0.1";

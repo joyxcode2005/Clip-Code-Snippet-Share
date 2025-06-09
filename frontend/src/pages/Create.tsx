@@ -3,27 +3,8 @@ import { ChevronDown } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
-import { BACKEND_URL } from "../constants";
+import { BACKEND_URL, categories, languages } from "../constants";
 import { useNavigate } from "react-router-dom";
-
-const languages = [
-  { name: "JavaScript", value: "javascript" },
-  { name: "TypeScript", value: "typescript" },
-  { name: "Python", value: "python" },
-  { name: "HTML", value: "html" },
-  { name: "CSS", value: "css" },
-  { name: "JSON", value: "json" },
-  { name: "SQL", value: "sql" },
-  { name: "Markdown", value: "markdown" },
-];
-
-const categories = [
-  "DSA",
-  "Web Development",
-  "Devops",
-  "AI_ML",
-  "Others",
-];
 
 const Create = () => {
   const [title, setTitle] = useState("");
@@ -52,7 +33,7 @@ const Create = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8787/api/v1/snippet/create`,
+        `${BACKEND_URL}/api/v1/snippet/create`,
         {
           title,
           language,
@@ -174,7 +155,11 @@ const Create = () => {
                         }}
                         className="w-full p-3 text-left text-white hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
                       >
-                        {category === "Web_Dev" ? "Web Development" : category === "AI_ML" ? "AI/ML" : category}
+                        {category === "Web_Dev"
+                          ? "Web Development"
+                          : category === "AI_ML"
+                          ? "AI/ML"
+                          : category}
                       </button>
                     ))}
                   </div>

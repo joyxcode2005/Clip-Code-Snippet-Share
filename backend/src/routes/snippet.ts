@@ -68,7 +68,7 @@ snippetRouter.post("/create", async (c) => {
     );
   }
 
-  try { 
+  try {
     const snippet = await prisma.snippet.create({
       data: {
         title: body.title,
@@ -118,6 +118,13 @@ snippetRouter.get("/bulk", async (c) => {
       take: limit,
       orderBy: {
         createdAt: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
 

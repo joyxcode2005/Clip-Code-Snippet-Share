@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
-import { Code, User, Search, Globe, Terminal, Cpu, Layers } from "lucide-react";
+import axios from "axios";
 import Editor from "@monaco-editor/react";
+import { useEffect, useState } from "react";
+import { FaClipboard } from "react-icons/fa";
+import { Code, User, Search, Globe, Terminal, Cpu, Layers } from "lucide-react";
+
+
 import Sidebar from "../components/Sidebar";
+import Skeleton from "../components/Skeleton";
 import Category from "../components/CatagoryTag";
 import Language from "../components/LanguageTag";
-import { FaClipboard } from "react-icons/fa";
-import axios from "axios";
+import { BACKEND_URL, tags } from "../constants";
 
-const tags = ["DSA", "Web_Dev", "DevOps/Linux", "AI/ML", "Others"];
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,7 +25,7 @@ const Home = () => {
     setLoading(true);
     try {
       const res = await axios(
-        `http://127.0.0.1:8787/api/v1/snippet/bulk?page=${page}`,
+        `${BACKEND_URL}/api/v1/snippet/bulk?page=${page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -33,7 +36,7 @@ const Home = () => {
 
       setLoading(false);
       setSnippets(res.data.data);
-      setHasNextPage(res.data.data.length === 10); // assuming 10 per page
+      setHasNextPage(res.data.data.length === 10);
     } catch (err) {
       console.error("Error fetching snippets:", err);
     }
@@ -114,8 +117,9 @@ const Home = () => {
 
           {/* Snippet Grid */}
           {loading ? (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-lg">Loading snippets...</div>
+            <div className="grid grid-cols-2 gap-x-0.5 gap-y-6">
+              <Skeleton />
+              <Skeleton />
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
@@ -164,10 +168,10 @@ const Home = () => {
                         <div className="flex items-center space-x-2">
                           <User className="h-4 w-4 text-yellow-300/50" />
                           <span className="text-sm text-green-500/60 font-semibold">
-                            {snippet.author}
+                            {snippet.user.username}
                           </span>
                         </div>
-                        <span className="text-sm text-slate-400">-</span>
+                        <span className="text-sm text-slate-400">|</span>
                         <span className="text-sm text-blue-500/60">
                           {snippet.createdAt?.split("T")[0]}
                         </span>
@@ -188,15 +192,15 @@ const Home = () => {
             <button
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
-              className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600 disabled:opacity-50"
+              className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600 disabled:opacity-50 cursor-pointer"
             >
               Previous
             </button>
-            <span className="text-white">Page {page}</span>
+          <span className="text-white font-mono text-xl uppercase font-bold">Page {page}</span>
             <button
               onClick={() => setPage((prev) => prev + 1)}
               disabled={!hasNextPage}
-              className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600 disabled:opacity-50"
+              className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600 disabled:opacity-50 cursor-pointer"
             >
               Next
             </button>
