@@ -14,14 +14,16 @@ export const loginInput = z.object({
 export const createSnippetInput = z.object({
   title: z.string().min(12, "Title should be atleast 12 characters long"),
   code: z.string(),
-  language: z.enum(["JAVASCRIPT", "PYTHON", "CPP", "C", "JAVA", "RUST", "GO"]),
-  category: z.enum([
-    "DSA",
-    "WEB_DEVELOPEMENT",
-    "DEVOPS_LINUX",
-    "AI_ML",
-    "CYBER_SECURITY",
+  language: z.enum([
+    "javascript",
+    "python",
+    "html",
+    "css",
+    "sql",
+    "markdown",
+    "json",
   ]),
+  category: z.enum(["DSA", "Web Dev", "Devops", "AI/ML"]),
   tags: z
     .enum([
       "ALGORITHM",

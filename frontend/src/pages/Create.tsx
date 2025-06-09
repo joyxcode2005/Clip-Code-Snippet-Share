@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
+import { BACKEND_URL } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 const languages = [
   { name: "JavaScript", value: "javascript" },
@@ -14,20 +17,58 @@ const languages = [
   { name: "Markdown", value: "markdown" },
 ];
 
-const tags = ["DSA", "Web Development", "DevOps/Linux", "AI/ML", "Others"];
+const categories = ["DSA", "Web Dev", "DevOps/Linux", "AI/ML", "Others"];
 
 const Create = () => {
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState(languages[0].value);
-  const [selectedTag, setSelectedTag] = useState(tags[0]);
-  const [code, setCode] = useState("// Write your code here");
+  const [category, setCategory] = useState(categories[0]);
+  const [code, setCode] = useState("");
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [isTagDropdownOpen, setIsTagDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log({ title, language, selectedTag, code });
+
+
+    console.log("Submitting snippet:", {
+      title,
+      language,
+      category,
+      code,
+    });
+
+    if (code === "") {
+      alert("Code cannot be empty. Please write some code before submitting.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8787/api/v1/snippet/create`,
+        {
+          title,
+          language,
+          category,
+          code,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Snippet created successfully!");
+        navigate("/home");
+      }
+    } catch (error) {
+      alert("Failed to create snippet. Please try again.");
+    }
   };
 
   return (
@@ -54,12 +95,12 @@ const Create = () => {
                 Title
               </label>
               <input
+                required
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white 
-                         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 placeholder="Enter snippet title"
               />
             </div>
@@ -76,9 +117,7 @@ const Create = () => {
                   onClick={() =>
                     setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
                   }
-                  className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white 
-                           flex items-center justify-between
-                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 >
                   {languages.find((lang) => lang.value === language)?.name}
                   <ChevronDown className="h-4 w-4" />
@@ -102,34 +141,34 @@ const Create = () => {
                 )}
               </div>
 
-              {/* Tag Dropdown */}
+              {/* Category Dropdown */}
               <div className="relative">
                 <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Tag
+                  Category
                 </label>
                 <button
                   type="button"
-                  onClick={() => setIsTagDropdownOpen(!isTagDropdownOpen)}
-                  className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white 
-                           flex items-center justify-between
-                           focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  onClick={() =>
+                    setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
+                  }
+                  className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 text-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 >
-                  {selectedTag}
+                  {category}
                   <ChevronDown className="h-4 w-4" />
                 </button>
-                {isTagDropdownOpen && (
+                {isCategoryDropdownOpen && (
                   <div className="absolute z-10 w-full mt-1 rounded-lg bg-slate-800 border border-slate-700 shadow-lg">
-                    {tags.map((tag) => (
+                    {categories.map((category) => (
                       <button
-                        key={tag}
+                        key={category}
                         type="button"
                         onClick={() => {
-                          setSelectedTag(tag);
-                          setIsTagDropdownOpen(false);
+                          setCategory(category);
+                          setIsCategoryDropdownOpen(false);
                         }}
                         className="w-full p-3 text-left text-white hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
                       >
-                        {tag}
+                        {category}
                       </button>
                     ))}
                   </div>
@@ -145,27 +184,24 @@ const Create = () => {
               <div className="rounded-lg overflow-hidden border border-slate-700">
                 <Editor
                   height="400px"
-                  defaultLanguage={language}
+                  language={language}
                   value={code}
                   onChange={(value) => setCode(value || "")}
                   theme="vs-dark"
                   options={{
-                    selectOnLineNumbers: true,
                     automaticLayout: true,
                     wordWrap: "on",
                     wrappingIndent: "indent",
                     tabSize: 2,
-                    useTabStops: true,
-                    fontFamily: "Fira Code, monospace",
-                    fontLigatures: true,
+                    fontFamily: "san-serif",
                     lineHeight: 24,
-                    fontSize: 14,
+                    fontSize: 20,
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
-                    lineNumbers: "on",
                     renderLineHighlight: "all",
                     contextmenu: false,
                     mouseWheelZoom: true,
+                    quickSuggestions: true,
                   }}
                 />
               </div>

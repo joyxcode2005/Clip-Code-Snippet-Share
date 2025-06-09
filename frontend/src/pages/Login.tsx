@@ -98,11 +98,11 @@ export default function Login() {
         navigate("/home");
       } else {
         setIsLoading(false);
-        setErr("Registration failed. Please try again.");
+        setErr("Login failed. Please try again.");
       }
     } catch (error: any) {
       setIsLoading(false);
-      setErr(error.message || "An error occurred. Please try again.");
+      setErr("Login failed. Please try again");
     }
   };
 

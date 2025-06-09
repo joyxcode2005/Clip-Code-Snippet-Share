@@ -51,6 +51,10 @@ snippetRouter.post("/create", async (c) => {
   const body = await c.req.json();
   const userId = c.get("userId");
 
+  if (!userId) {
+    return c.json({ message: "Unauthorized: User ID not found." }, 401);
+  }
+
   const { success, error } = createSnippetInput.safeParse(body);
 
   if (!success) {
@@ -105,21 +109,29 @@ snippetRouter.get("/bulk", async (c) => {
   const limit = 10;
   const skip = (page - 1) * limit;
 
-  const snippets = await prisma.snippet.findMany({
-    skip,
-    take: limit,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
+    const snippets = await prisma.snippet.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  const totalCount = await prisma.snippet.count();
+    const totalCount = await prisma.snippet.count();
 
-  return c.json({
-    page,
-    totalPages: Math.ceil(totalCount / limit),
-    data: snippets,
-  });
+    return c.json({
+      page,
+      totalPages: Math.ceil(totalCount / limit),
+      data: snippets,
+    });
+  } catch (error) {
+    c.status(500);
+    return c.json({
+      message: "Error fetching snippets!!",
+      error,
+    });
+  }
 });
 
 // Route to get all the snippets created by the user with pagination
@@ -173,7 +185,6 @@ snippetRouter.get("/search", async (c) => {
 
   const language = (c.req.query("language") || "JAVASCRIPT") as Language;
   const category = (c.req.query("category") || "DSA") as Category;
-
 
   try {
     const snippets = await prisma.snippet.findMany({
@@ -332,7 +343,7 @@ snippetRouter.get("/:id", async (c) => {
     } else {
       c.status(500);
       return c.json({
-        message: "Error getting snippet",
+        message: "Error getting the snippet",
       });
     }
   } catch (error) {

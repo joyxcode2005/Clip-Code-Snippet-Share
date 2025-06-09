@@ -17,13 +17,13 @@ datasource db {
 // enums 
 
 enum Language {
-  JAVASCRIPT
-  PYTHON
-  CPP
-  C
-  JAVA
-  RUST
-  GO
+  javascript
+  python
+  html
+  css
+  sql
+  markdown
+  json
 }
 
 enum Tag {
@@ -37,7 +37,7 @@ enum Tag {
 
 enum Category {
   DSA
-  WEB_DEVELOPEMENT
+  WEB_DEV
   DEVOPS_LINUX
   AI_ML
   CYBER_SECURITY
