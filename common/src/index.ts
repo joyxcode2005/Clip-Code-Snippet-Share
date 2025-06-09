@@ -22,8 +22,9 @@ export const createSnippetInput = z.object({
     "sql",
     "markdown",
     "json",
+    
   ]),
-  category: z.enum(["DSA", "Web Dev", "Devops", "AI/ML"]),
+  category: z.enum(["DSA", "Web_Dev", "Devops", "AI_ML"]),
   tags: z
     .enum([
       "ALGORITHM",

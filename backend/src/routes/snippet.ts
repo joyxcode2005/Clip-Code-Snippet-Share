@@ -54,19 +54,21 @@ snippetRouter.post("/create", async (c) => {
   if (!userId) {
     return c.json({ message: "Unauthorized: User ID not found." }, 401);
   }
+  console.log("Create Endpoint Body: ", body);
 
   const { success, error } = createSnippetInput.safeParse(body);
 
   if (!success) {
     return c.json(
       {
-        message: error,
+        message: "Error from zod : ",
+        error,
       },
       400
     );
   }
 
-  try {
+  try { 
     const snippet = await prisma.snippet.create({
       data: {
         title: body.title,
@@ -74,6 +76,7 @@ snippetRouter.post("/create", async (c) => {
         category: body.category,
         language: body.language,
         userId: userId,
+        tags: body.tags ?? [],
       },
     });
 

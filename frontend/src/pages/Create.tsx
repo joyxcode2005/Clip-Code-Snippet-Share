@@ -17,7 +17,13 @@ const languages = [
   { name: "Markdown", value: "markdown" },
 ];
 
-const categories = ["DSA", "Web Dev", "DevOps/Linux", "AI/ML", "Others"];
+const categories = [
+  "DSA",
+  "Web Development",
+  "Devops",
+  "AI_ML",
+  "Others",
+];
 
 const Create = () => {
   const [title, setTitle] = useState("");
@@ -26,24 +32,23 @@ const Create = () => {
   const [code, setCode] = useState("");
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
-    console.log("Submitting snippet:", {
-      title,
-      language,
-      category,
-      code,
-    });
-
     if (code === "") {
       alert("Code cannot be empty. Please write some code before submitting.");
       return;
     }
+
+    if (category === "Web Development") {
+      setCategory("Web_Dev");
+    }
+
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -64,6 +69,7 @@ const Create = () => {
 
       if (response.status === 200) {
         alert("Snippet created successfully!");
+        setLoading(false);
         navigate("/home");
       }
     } catch (error) {
@@ -168,7 +174,7 @@ const Create = () => {
                         }}
                         className="w-full p-3 text-left text-white hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
                       >
-                        {category}
+                        {category === "Web_Dev" ? "Web Development" : category === "AI_ML" ? "AI/ML" : category}
                       </button>
                     ))}
                   </div>
@@ -214,7 +220,7 @@ const Create = () => {
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 
                           transition-colors duration-200 font-medium cursor-pointer"
               >
-                Create Snippet
+                {loading ? "Creating..." : "Create Snippet"}
               </button>
             </div>
           </form>

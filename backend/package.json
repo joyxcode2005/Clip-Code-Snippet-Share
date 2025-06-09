@@ -6,7 +6,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
-    "@joyxcoder/clip-code-common": "^1.0.5",
+    "@joyxcoder/clip-code-common": "^1.0.8",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^2.0.1",
     "bcryptjs": "^3.0.2",
